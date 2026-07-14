@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference · The Model Call</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">AI-Forward · Reference Card 01</p>
+  <h1>The Model Call</h1>
+  <p class="lede">The one-page mental model. Everything downstream is a consequence of this.</p>
+
+  <div class="panel key">
+    <p class="label">Definition</p>
+    <p>One model call = <strong>send the entire context as one flat token string → get a
+    sampled continuation back.</strong> Stateless. Text in, next token out, repeated.</p>
+  </div>
+
+  <h2>Vocabulary</h2>
+  <ul>
+    <li><strong>Token</strong> — the model's unit of text, ≈ ¾ of a word.</li>
+    <li><strong>Context window</strong> — the finite token budget for one call. Holds
+      system prompt + history + retrieved data + the reply. A shared resource you manage.</li>
+    <li><strong>Stateless</strong> — no memory between calls; "memory" = your app resending
+      the transcript.</li>
+    <li><strong>Sampling</strong> — the reply is drawn from a probability distribution →
+      nondeterminism; hallucination is a normal failure mode, not a malfunction.</li>
+  </ul>
+
+  <h2>The three consequences</h2>
+  <ol>
+    <li><strong>Stateless</strong> → resend everything every turn; memory &amp; context
+      management are <em>your</em> problem.</li>
+    <li><strong>One string</strong> → instructions and data aren't separated → prompt
+      injection is architectural (OWASP <strong>LLM01</strong>).</li>
+    <li><strong>Sampled output</strong> → nondeterministic &amp; can be confidently wrong →
+      you need evals; never wire raw output to a privileged action.</li>
+  </ol>
+
+  <div class="panel sec">
+    <p class="label">Security spine</p>
+    <p><strong>Every place untrusted text enters the context window is an attack
+    surface.</strong> Direct = the user types it. Indirect = it rides in on content the
+    model reads (web page, PDF, tool result). Delimiters/warnings ≠ a hard boundary.
+    Defenses live <em>around</em> the model: least privilege, output validation, human
+    approval in the loop.</p>
+  </div>
+
+  <h2>Reflex to build</h2>
+  <p>Given any AI feature, immediately ask: <em>"What goes into the context string, and
+  which parts of it are attacker-controlled?"</em></p>
+
+  <div class="foot">
+    <span><a href="../lessons/0001-anatomy-of-a-model-call.html">← Lesson 01</a></span>
+    <span>OWASP LLM01 · Karpathy Intro to LLMs</span>
+  </div>
+</div>
+</body>
+</html>

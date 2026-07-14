@@ -1,0 +1,194 @@
+/* ============================================================
+   AI-Forward course — shared stylesheet
+   One visual system across every lesson & reference card.
+   Tufte-ish: generous margins, real typography, restraint.
+   ============================================================ */
+
+:root {
+  --ink:        #1a1a1a;
+  --ink-soft:   #4a4a4a;
+  --ink-faint:  #6b6b6b;
+  --bg:         #fdfcf9;
+  --panel:      #f4f1e8;
+  --rule:       #e2ddd0;
+  --link:       #7a1f1f;
+  --link-hover: #a83232;
+  --accent:     #7a1f1f;   /* deep red — used sparingly */
+  --sec:        #1f4b6b;   /* security blue */
+  --sec-bg:     #eef3f7;
+  --sec-rule:   #cadbe8;
+  --good:       #1f6b3a;
+  --good-bg:    #edf5ef;
+  --warn:       #8a5a00;
+  --warn-bg:    #f7f1e3;
+  --code-bg:    #f0ece1;
+  --maxw:       42rem;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans:  -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono:  "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink:#e8e4d8; --ink-soft:#c2bdae; --ink-faint:#948f82;
+    --bg:#16150f; --panel:#211f18; --rule:#33302a;
+    --link:#e39191; --link-hover:#f0b0b0; --accent:#e39191;
+    --sec:#8fc0e0; --sec-bg:#13212b; --sec-rule:#26414f;
+    --good:#8fd0a5; --good-bg:#132015; --warn:#d9b25f; --warn-bg:#241f12;
+    --code-bg:#211f18;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--serif);
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.62;
+  font-size: 19px;
+  margin: 0;
+  padding: 3.5rem 1.5rem 6rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: var(--maxw); margin: 0 auto; }
+
+/* ---- Kicker / mission tag ---- */
+.kicker {
+  font-family: var(--sans);
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 0 0 .6rem;
+}
+.kicker a { color: var(--accent); }
+
+/* ---- Headings ---- */
+h1 {
+  font-size: 2.15rem; line-height: 1.14; font-weight: 600;
+  margin: 0 0 .5rem; letter-spacing: -.01em;
+}
+h2 {
+  font-family: var(--sans); font-weight: 650;
+  font-size: 1.02rem; letter-spacing: .02em;
+  margin: 2.8rem 0 .9rem; padding-bottom: .35rem;
+  border-bottom: 1px solid var(--rule);
+  text-transform: uppercase; color: var(--ink-soft);
+}
+h3 { font-size: 1.2rem; font-weight: 600; margin: 1.8rem 0 .5rem; }
+
+.lede {
+  font-size: 1.16rem; color: var(--ink-soft);
+  margin: 0 0 1.2rem; line-height: 1.5;
+}
+
+p { margin: 0 0 1.1rem; }
+strong { font-weight: 650; }
+em { font-style: italic; }
+
+a { color: var(--link); text-decoration: none; border-bottom: 1px solid currentColor; }
+a:hover { color: var(--link-hover); }
+
+/* citations */
+sup.cite { font-family: var(--sans); font-size: .62em; line-height: 0; }
+sup.cite a { border: none; }
+
+/* ---- Callout panels ---- */
+.panel {
+  background: var(--panel); border: 1px solid var(--rule);
+  border-radius: 8px; padding: 1.1rem 1.3rem; margin: 1.4rem 0;
+}
+.panel .label {
+  font-family: var(--sans); font-size: .68rem; letter-spacing: .12em;
+  text-transform: uppercase; font-weight: 700; margin: 0 0 .5rem;
+  display: flex; align-items: center; gap: .5rem;
+}
+.panel p:last-child { margin-bottom: 0; }
+
+.sec { background: var(--sec-bg); border-color: var(--sec-rule); }
+.sec .label { color: var(--sec); }
+.sec .label::before { content: "🛡"; font-size: 1rem; }
+
+.key { border-left: 3px solid var(--accent); }
+.key .label { color: var(--accent); }
+
+.good { background: var(--good-bg); border-color: color-mix(in srgb, var(--good) 30%, transparent); }
+.warn { background: var(--warn-bg); border-color: color-mix(in srgb, var(--warn) 35%, transparent); }
+
+/* ---- Code ---- */
+code {
+  font-family: var(--mono); font-size: .82em;
+  background: var(--code-bg); padding: .1em .4em; border-radius: 4px;
+}
+pre {
+  font-family: var(--mono); font-size: .78rem; line-height: 1.55;
+  background: var(--code-bg); border: 1px solid var(--rule);
+  border-radius: 8px; padding: 1rem 1.2rem; overflow-x: auto;
+}
+pre code { background: none; padding: 0; font-size: 1em; }
+
+/* ---- Definition / margin notes ---- */
+.marginnote, .defn {
+  font-family: var(--sans); font-size: .82rem;
+  color: var(--ink-faint); line-height: 1.45;
+}
+
+/* ---- Interactive quiz widget (styled here, behavior in quiz.js) ---- */
+.quiz { margin: 1.4rem 0; }
+.quiz .q {
+  border: 1px solid var(--rule); border-radius: 10px;
+  padding: 1.2rem 1.3rem; margin: 1rem 0; background: var(--panel);
+}
+.quiz .stem { font-weight: 600; margin: 0 0 .9rem; }
+.quiz .opts { display: grid; gap: .55rem; }
+.quiz button.opt {
+  font-family: var(--sans); font-size: .92rem; text-align: left;
+  padding: .7rem .95rem; border: 1px solid var(--rule); border-radius: 7px;
+  background: var(--bg); color: var(--ink); cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+.quiz button.opt:hover { border-color: var(--ink-faint); }
+.quiz button.opt.correct { background: var(--good-bg); border-color: var(--good); color: var(--good); font-weight: 600; }
+.quiz button.opt.wrong   { background: var(--warn-bg); border-color: var(--warn); color: var(--warn); }
+.quiz button.opt:disabled { cursor: default; }
+.quiz .fb {
+  font-family: var(--sans); font-size: .86rem; line-height: 1.45;
+  margin-top: .85rem; padding: .7rem .9rem; border-radius: 7px;
+  background: var(--sec-bg); color: var(--ink-soft); display: none;
+}
+.quiz .fb.show { display: block; }
+.quiz .fb.ok { background: var(--good-bg); }
+
+/* progress dots */
+.progress { font-family: var(--sans); font-size: .8rem; color: var(--ink-faint); margin-top: .5rem; }
+
+/* ---- Footer nav ---- */
+.foot {
+  margin-top: 3.5rem; padding-top: 1.2rem; border-top: 1px solid var(--rule);
+  font-family: var(--sans); font-size: .85rem; color: var(--ink-faint);
+  display: flex; flex-wrap: wrap; gap: 1.2rem; justify-content: space-between;
+}
+.foot a { color: var(--link); }
+
+.ask {
+  font-family: var(--sans); font-size: .9rem;
+  background: var(--sec-bg); border: 1px dashed var(--sec-rule);
+  border-radius: 8px; padding: .8rem 1rem; margin: 2rem 0 0; color: var(--ink-soft);
+}
+.ask strong { color: var(--sec); }
+
+hr.rule { border: none; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+
+ul, ol { padding-left: 1.3rem; }
+li { margin: .35rem 0; }
+
+/* ---- Print: make reference cards printer-friendly ---- */
+@media print {
+  :root { --bg:#fff; --panel:#f6f6f6; --ink:#000; }
+  body { padding: 0; font-size: 11pt; }
+  .quiz button.opt, .foot, .ask { display: none !important; }
+  a { color: #000; }
+  .panel { break-inside: avoid; }
+}
