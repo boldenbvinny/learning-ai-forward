@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference · Injection Defense — the Four Layers</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">AI-Forward · Reference Card 02</p>
+  <h1>Injection Defense — the Four Layers</h1>
+  <p class="lede">A quick-reference for hardening any LLM feature against prompt injection.
+  Layers 1–2 <em>reduce probability</em>; layers 3–4 are the <em>real boundary</em>. Defense in
+  depth: use all four.<sup class="cite"><a href="#src">1</a></sup></p>
+
+  <table style="width:100%; border-collapse:collapse; font-family:var(--sans); font-size:.86rem; margin:1.2rem 0;">
+    <tr style="border-bottom:2px solid var(--rule);">
+      <th style="text-align:left; padding:.5rem .5rem; width:2.2rem;">#</th>
+      <th style="text-align:left; padding:.5rem .5rem;">Layer</th>
+      <th style="text-align:left; padding:.5rem .5rem;">What it does</th>
+      <th style="text-align:left; padding:.5rem .5rem;">Boundary?</th>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.5rem .5rem;">1</td>
+      <td style="padding:.5rem .5rem;"><strong>Structured input / delimiting</strong><br>
+        <span class="defn">Mark untrusted text as DATA, not COMMANDS: explicit sections
+        (<code>USER_DATA:</code> vs <code>SYSTEM_INSTRUCTIONS:</code>), fenced delimiters.</span></td>
+      <td style="padding:.5rem .5rem;">Raises the model's cost to obey injected instructions.</td>
+      <td style="padding:.5rem .5rem; color:var(--warn);">No — probabilistic</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.5rem .5rem;">2</td>
+      <td style="padding:.5rem .5rem;"><strong>Input &amp; output validation</strong><br>
+        <span class="defn">Deterministically screen inputs for injection/obfuscation, and
+        screen <em>outputs</em> for leakage, secrets, unsafe markup/links.</span></td>
+      <td style="padding:.5rem .5rem;">Catches known-bad patterns before and after the model.</td>
+      <td style="padding:.5rem .5rem; color:var(--warn);">Partial — bypassable</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.5rem .5rem;">3</td>
+      <td style="padding:.5rem .5rem;"><strong>Least privilege on tools/actions</strong><br>
+        <span class="defn">Read-only creds, scoped APIs, validate every tool call against the
+        user's actual permissions. Assume the model <em>will</em> be tricked.</span></td>
+      <td style="padding:.5rem .5rem;">Caps the blast radius — injection can't exceed granted rights.</td>
+      <td style="padding:.5rem .5rem; color:var(--good);">Yes — deterministic</td>
+    </tr>
+    <tr>
+      <td style="padding:.5rem .5rem;">4</td>
+      <td style="padding:.5rem .5rem;"><strong>Human-in-the-loop</strong><br>
+        <span class="defn">Require explicit human approval before any destructive or
+        high-privilege action executes.</span></td>
+      <td style="padding:.5rem .5rem;">Final gate on irreversible actions.</td>
+      <td style="padding:.5rem .5rem; color:var(--good);">Yes — deterministic</td>
+    </tr>
+  </table>
+
+  <div class="panel key">
+    <p class="label">The one rule</p>
+    <p><strong>Treat model output as untrusted input.</strong> Never let model output trigger a
+    privileged action without a <em>deterministic gate</em> in your own code — least-privilege
+    scope (Layer 3) and/or human approval (Layer 4). Everything inside the prompt is
+    persuasion; only code outside the model is a boundary.</p>
+  </div>
+
+  <div class="panel warn">
+    <p class="label">⚠ Trap</p>
+    <p>A "guardrail LLM" that screens for attacks is <em>itself</em> an LLM and is itself
+    injectable. It's a Layer-2 aid, never a replacement for Layers 3–4.<sup class="cite"><a href="#src">1</a></sup></p>
+  </div>
+
+  <div class="foot">
+    <span><a href="0001-the-model-call.html">↗ Reference 01: The Model Call</a> · <a href="../GLOSSARY.md">Glossary</a></span>
+    <span><a href="../lessons/0003-defending-the-injection-surface.html">From Lesson 03</a></span>
+  </div>
+
+  <ol class="defn" style="margin-top:1.5rem;">
+    <li id="src"><a href="https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html">OWASP
+      — LLM Prompt Injection Prevention Cheat Sheet</a>. Structured prompts, input/output
+      validation, least-privilege tool scopes, human approval on destructive actions;
+      guardrail LLMs are one layer, not a solution.</li>
+  </ol>
+
+</div>
+</body>
+</html>
