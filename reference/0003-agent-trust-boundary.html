@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference · The Agent Trust Boundary — RAG, Memory & Threat-Modeling the Loop</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">AI-Forward · Reference Card 03</p>
+  <h1>The Agent Trust Boundary</h1>
+  <p class="lede">RAG, memory, and threat-modeling an agent — all one idea. Every source that
+  feeds the context window is <em>untrusted data</em>; the only boundary that holds is a
+  <strong>deterministic gate</strong> in your own code, downstream of the model.<sup class="cite"><a href="#src">1</a></sup></p>
+
+  <h2>The data-flow — memorize this shape</h2>
+  <p>Draw any agent this way. Everything on the left flows into one flat <a href="../GLOSSARY.md">context window</a>;
+  the model turns it into a <a href="../GLOSSARY.md">tool call</a>; only <strong>your gate</strong> decides if it acts.</p>
+
+<pre><code>  user input ───┐
+  RAG docs ─────┤                                                  ┌── attacker can plant text
+  memory files ─┼──▶ [ MODEL / context window ] ──▶ tool_use ──▶ [ YOUR GATE ] ──▶ action
+  tool results ─┘            ▲                        (request)    (deterministic)    │
+                             └──────────── tool_result (UNTRUSTED) ◀─────────────────┘
+                                            the loop closes the circuit</code></pre>
+
+  <div class="panel sec">
+    <p class="label">Security spine</p>
+    <p>Every arrow <em>into</em> the model box is a potential <a href="../GLOSSARY.md">indirect injection</a>
+    vector — not just the user. A poisoned RAG chunk, a poisoned memory file, or a poisoned tool
+    result is the same threat class you met in Lesson&nbsp;05: attacker-controllable text becoming
+    the input to the model's next privileged decision.</p>
+  </div>
+
+  <h2>RAG &amp; memory — where they plug in</h2>
+
+  <table style="width:100%; border-collapse:collapse; font-family:var(--sans); font-size:.84rem; margin:1.2rem 0;">
+    <tr style="border-bottom:2px solid var(--rule);">
+      <th style="text-align:left; padding:.5rem .5rem; width:5.5rem;">Mechanism</th>
+      <th style="text-align:left; padding:.5rem .5rem;">Gap it fills</th>
+      <th style="text-align:left; padding:.5rem .5rem;">Where in the loop</th>
+      <th style="text-align:left; padding:.5rem .5rem;">Its danger</th>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.5rem .5rem;"><strong>RAG</strong></td>
+      <td style="padding:.5rem .5rem;"><em>Stateless</em> → the model doesn't know <em>your</em> data. Retrieve relevant docs, inject as context.</td>
+      <td style="padding:.5rem .5rem;">Pre-loop (prepend top-k) <em>or</em> as a <code>search</code> tool inside the loop.</td>
+      <td style="padding:.5rem .5rem;">Anyone who can write to the corpus (a ticket, a wiki, a scraped page) plants instructions the model will retrieve.</td>
+    </tr>
+    <tr>
+      <td style="padding:.5rem .5rem;"><strong>Memory</strong></td>
+      <td style="padding:.5rem .5rem;">Cross-<em>session</em> statelessness. A tool (<code>memory_20250818</code>) that writes notes to a <code>/memories</code> dir that persist.</td>
+      <td style="padding:.5rem .5rem;">A tool call inside the loop whose "action" is <em>write a note to my future self</em>.</td>
+      <td style="padding:.5rem .5rem;"><strong>Worse — it persists.</strong> One injection writes a poisoned note that replays into every future session.</td>
+    </tr>
+  </table>
+
+  <div class="panel warn">
+    <p class="label">⚠ Two memory-specific traps</p>
+    <p><strong>1. Never store secrets in memory</strong> — they replay verbatim into future context.
+    <strong>2. Validate every model-supplied path</strong> — the memory tool takes file paths <em>from the model</em>;
+    reject <code>..</code> traversal and symlinks. The model's input is attacker-controlled, so its paths are too.</p>
+  </div>
+
+  <h2>Threat-modeling the loop — the method</h2>
+  <p>It's a trust-boundary exercise you already know from services. Walk it with
+  <a href="https://genai.owasp.org/">OWASP&nbsp;GenAI</a> as the checklist:<sup class="cite"><a href="#src">1</a></sup></p>
+
+  <ol>
+    <li><strong>Enumerate the tools = enumerate the blast radius.</strong> For each tool, ask:
+      worst case if the model calls it with <em>attacker-chosen</em> arguments? A granular
+      <code>delete_file(path)</code> you can gate; an open-ended <code>bash(cmd)</code> you cannot.
+      (<a href="../GLOSSARY.md">Excessive agency</a>, LLM06.)</li>
+    <li><strong>List every untrusted-data source.</strong> User turns, RAG corpus, memory, <em>and every
+      tool result.</em> Rank by attacker-controllability: can they edit the wiki? plant a ticket?
+      poison a scraped page? (<a href="../GLOSSARY.md">Indirect injection</a>, LLM01.)</li>
+    <li><strong>The loop amplifies.</strong> A one-shot call gives an attacker one attempt; an agent
+      loop gives N iterations plus a persistence surface (memory). More autonomy = more surface.</li>
+    <li><strong>Confirm a gate sits on every path</strong> from an untrusted source to a privileged action —
+      <a href="../GLOSSARY.md">least privilege</a> scope and/or <a href="../GLOSSARY.md">human-in-the-loop</a>,
+      firing on <em>every</em> iteration, behind a hard loop cap.</li>
+  </ol>
+
+  <div class="panel key">
+    <p class="label">The one rule</p>
+    <p>Threat-modeling an agent = <strong>finding every path from an untrusted-data source to a
+    privileged action, and confirming a deterministic gate sits on each one.</strong> RAG docs,
+    memory files, and tool results are all untrusted data — the gate is always
+    <a href="../GLOSSARY.md">code the attacker can't argue out of</a> (enforce authz in code).</p>
+  </div>
+
+  <h2>Aside — the SDK tool-runner vs. the hand-written loop</h2>
+  <p>The SDK's <code>tool_runner</code> writes the loop for you (in Python, <code>@beta_tool</code> +
+  <code>client.beta.messages.tool_runner</code>). It does <em>not</em> remove the gate — you either
+  gate <em>inside</em> the tool function or <em>between</em> iterations. We hand-wrote the loop in
+  Lesson&nbsp;05 for one reason: it puts the gate <em>visibly between</em> the model's request and
+  execution, so the boundary is where you can see and maintain it. Graduate to the runner in
+  production; just keep the gate somewhere you won't forget it.</p>
+
+  <div class="foot">
+    <span><a href="0002-injection-defense-layers.html">↗ Reference 02: Four Layers</a> · <a href="../GLOSSARY.md">Glossary</a></span>
+    <span><a href="../lessons/0005-the-agent-loop.html">From Lesson 05</a></span>
+  </div>
+
+  <div class="ask">
+    <strong>Ask your teacher:</strong> stuck on where RAG retrieval actually happens, or how to gate a
+    tool inside the runner? Bring it to the next session — that's what I'm here for.
+  </div>
+
+  <ol class="defn" style="margin-top:1.5rem;">
+    <li id="src"><a href="https://genai.owasp.org/">OWASP GenAI Security Project — Top 10 for LLM
+      Applications (2025)</a>: LLM01 Prompt Injection (direct &amp; indirect), LLM06 Excessive Agency.
+      Also <a href="https://www.anthropic.com/engineering/building-effective-agents">Anthropic —
+      Building Effective Agents</a> (the loop, compounding errors, "start simple").</li>
+  </ol>
+
+</div>
+</body>
+</html>
