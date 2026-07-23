@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reference · The RAG Retrieval Boundary — Embeddings, Poisoning &amp; Threat-Modeling the Index</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">AI-Forward · Reference Card 04 · <span style="opacity:.7">filed 2026-07-22 · answers to your 3 L06 questions</span></p>
+  <h1>The RAG Retrieval Boundary</h1>
+  <p class="lede">Three questions you asked at the end of <a href="../lessons/0006-rag-grounding-and-its-injection-surface.html">Lesson&nbsp;06</a>,
+  answered for morning review. The through-line: <strong>a real vector database makes retrieval
+  smarter, not safer.</strong> Every retrieved chunk is still <a href="../GLOSSARY.md">untrusted
+  data</a>, and the boundary is still a <strong>deterministic gate in your code</strong>.<sup class="cite"><a href="#src">1</a></sup></p>
+
+  <hr class="rule">
+
+  <h2>Q1 · How a real vector DB + embeddings slots into Step&nbsp;1 — without changing the security story</h2>
+
+  <p>In the lesson, <code>retrieve()</code> was a dictionary keyword match. In production you swap that one
+  function for an <strong>embedding model + vector store</strong>. Nothing else in the pipeline changes —
+  and, crucially, <em>neither does the trust model.</em></p>
+
+  <p><strong>Offline, once (ingest):</strong></p>
+<pre><code>for doc in corpus:
+    vec = embed(doc.text)                 # embedding model → a vector
+    index.upsert(id=doc.id, vector=vec,
+                 text=doc.text,
+                 metadata={"owner": doc.owner, "acl": doc.acl})   # ← keep this</code></pre>
+
+  <p><strong>Per query (retrieve) — the only line that changed from Step&nbsp;1:</strong></p>
+<pre><code>qvec = embed(user_q)                       # embed the QUESTION
+hits = index.query(qvec, top_k=3,
+                   filter={"acl": current_user.groups})   # ← access control HERE, in code
+context = "\n\n".join(h.text for h in hits)
+# …then the SAME augment → generate → OUTPUT GATE as the lesson.</code></pre>
+
+  <div class="panel sec">
+    <p class="label">Why the security story is identical</p>
+    <p>An embedding is a <em>similarity function</em>, not a <em>sanitizer</em>. Retrieval finds text that's
+    semantically close to the question — it never inspects that text for instructions. So a poisoned chunk
+    that ranks well is retrieved and pasted <em>exactly</em> like the dictionary version. The retrieved chunk
+    is untrusted before embeddings and untrusted after. Fancier retriever, same
+    <a href="../GLOSSARY.md">indirect injection</a> surface.</p>
+  </div>
+
+  <p><strong>But embeddings add three <em>new</em> wrinkles</strong> (bank these for the capstone):</p>
+  <table style="width:100%; border-collapse:collapse; font-family:var(--sans); font-size:.84rem; margin:1rem 0;">
+    <tr style="border-bottom:2px solid var(--rule);">
+      <th style="text-align:left; padding:.45rem .5rem; width:11rem;">New wrinkle</th>
+      <th style="text-align:left; padding:.45rem .5rem;">What it means for you</th>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.45rem .5rem;"><strong>Retrieval hijacking</strong></td>
+      <td style="padding:.45rem .5rem;">An attacker can craft a chunk stuffed with high-salience terms so it ranks top-k for <em>many</em> queries — getting their payload retrieved far more often than a naive keyword match would.</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.45rem .5rem;"><strong>top-k = more untrusted text</strong></td>
+      <td style="padding:.45rem .5rem;">Returning the 3–10 nearest chunks means 3–10 independent injection chances per answer, not one. Blast radius scales with <code>k</code>.</td>
+    </tr>
+    <tr>
+      <td style="padding:.45rem .5rem;"><strong>Access control moves to query-time</strong></td>
+      <td style="padding:.45rem .5rem;">The vector store holds <em>everyone's</em> data in one index. If you don't filter by the user's permissions <em>at query time</em> (that <code>filter=</code> line), retrieval leaks across tenants — a data breach with no injection required.</td>
+    </tr>
+  </table>
+
+  <hr class="rule">
+
+  <h2>Q2 · How RAG poisoning differs from tool-result poisoning</h2>
+
+  <p>Same <em>threat class</em> (untrusted text → model's next decision), but the <strong>timing and
+  attacker's access differ</strong>, and that changes how you defend.</p>
+
+  <table style="width:100%; border-collapse:collapse; font-family:var(--sans); font-size:.83rem; margin:1rem 0;">
+    <tr style="border-bottom:2px solid var(--rule);">
+      <th style="text-align:left; padding:.45rem .5rem; width:9rem;"></th>
+      <th style="text-align:left; padding:.45rem .5rem;">Tool-result poisoning (L05)</th>
+      <th style="text-align:left; padding:.45rem .5rem;">RAG / index poisoning (L06)</th>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.45rem .5rem;"><strong>When planted</strong></td>
+      <td style="padding:.45rem .5rem;"><em>At call time</em> — the payload lives in whatever the tool reads <em>right now</em> (a live web page, an API response, a file on disk).</td>
+      <td style="padding:.45rem .5rem;"><em>Ahead of time</em> — the payload was written into the corpus earlier and sits <strong>dormant</strong> until a query happens to retrieve it. (EchoLeak: the email arrived days before the victim asked anything.)</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.45rem .5rem;"><strong>Attacker needs</strong></td>
+      <td style="padding:.45rem .5rem;">Control of a <em>source the tool fetches</em> (a page you scrape, an inbox you read).</td>
+      <td style="padding:.45rem .5rem;"><em>Write access to the index</em> — or to anything that <em>feeds</em> the index (a shared doc, a ticket, a crawled site).</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.45rem .5rem;"><strong>Trigger</strong></td>
+      <td style="padding:.45rem .5rem;">Deterministic-ish: fires when the agent calls that tool in the loop.</td>
+      <td style="padding:.45rem .5rem;"><strong>Probabilistic:</strong> fires only when a query is semantically close enough to retrieve the poisoned chunk — which is why attackers do <em>retrieval hijacking</em> (Q1).</td>
+    </tr>
+    <tr style="border-bottom:1px solid var(--rule);">
+      <td style="padding:.45rem .5rem;"><strong>Blast radius</strong></td>
+      <td style="padding:.45rem .5rem;">This session, this agent.</td>
+      <td style="padding:.45rem .5rem;"><strong>Every user</strong> whose query retrieves it, until the chunk is found and purged. One write, many victims.</td>
+    </tr>
+    <tr>
+      <td style="padding:.45rem .5rem;"><strong>Extra defense it demands</strong></td>
+      <td style="padding:.45rem .5rem;">Treat the result as untrusted; gate the next action.</td>
+      <td style="padding:.45rem .5rem;">All of that <em>plus</em> control <strong>write access to the corpus</strong> and track chunk <strong>provenance</strong>, so you can trust-rank and purge sources.</td>
+    </tr>
+  </table>
+
+  <div class="panel key">
+    <p class="label">The one-line difference</p>
+    <p>Tool-result poisoning is an attack on <strong>what the model reads <em>now</em></strong>; RAG poisoning
+    is an attack on <strong>what you <em>stored earlier</em></strong>. So RAG adds a defense the loop didn't
+    need: <em>secure the write path into the index</em>, not just the read path out of it.</p>
+  </div>
+
+  <hr class="rule">
+
+  <h2>Q3 · Threat-modeling the <em>whole</em> retrieval pipeline — "who can write to the index?"</h2>
+
+  <p>Same method as Card&nbsp;03, aimed at the pipeline instead of the loop. Walk every stage and ask the
+  boundary question. The one most teams skip is the very first.</p>
+
+<pre><code>  WRITERS ──▶ [ INGEST ] ──▶ [ INDEX ] ──▶ [ RETRIEVE ] ──▶ [ AUGMENT ] ──▶ [ MODEL ] ──▶ [ OUTPUT ]
+  who can        chunk +       stored,       top-k by         delimit as     generates      GATE:
+  add text?      embed         multi-tenant  similarity       untrusted      (persuadable)  no exfil
+     ▲            ▲             ▲             + ACL filter                                   channel
+  the real    poisoned      cross-tenant   leak if no                                    the EchoLeak
+  front door  chunk lands   leak risk      filter                                        wall</code></pre>
+
+  <ol>
+    <li><strong>INGEST — enumerate the writers (the question you asked).</strong> List <em>everyone and
+      everything</em> that can put text into the corpus: employees, end-users, uploaded files, inbound
+      email, support tickets, crawled web pages, third-party API syncs. <em>Each writer is an injection
+      author.</em> Classify the corpus: <strong>curated</strong> (only trusted authors write) vs.
+      <strong>open</strong> (any user or external content flows in). EchoLeak was an <em>open</em> corpus —
+      an outside email got indexed. Open corpora are where poisoning lives.</li>
+    <li><strong>INDEX — integrity &amp; tenancy.</strong> Is the store multi-tenant? Every chunk needs an
+      <code>owner</code>/<code>acl</code> tag at write time (Q1) or you can't filter it at read time. Can a
+      writer overwrite or delete <em>others'</em> chunks? Log who wrote what — that's your
+      <strong>provenance</strong> trail for purging a bad source later.</li>
+    <li><strong>RETRIEVE — enforce access control here, in code.</strong> The retriever must return only
+      chunks <em>this user</em> is allowed to see (the <code>filter=</code> line). This is authz, and like
+      every authz decision in this course it lives in <em>your code, never the model's judgement</em>
+      (<a href="../GLOSSARY.md">enforce authz in code</a>). Skip it and you get cross-tenant leakage with no
+      injection needed.</li>
+    <li><strong>AUGMENT — delimit.</strong> Wrap retrieved chunks in <code>&lt;untrusted_context&gt;</code>.
+      Raises the cost of injection; still probabilistic, not a wall (<a href="../GLOSSARY.md">delimiting</a>).</li>
+    <li><strong>MODEL — assume it loses.</strong> A persuasive enough chunk will win. Don't spend your budget
+      here; spend it on the two boundaries around it (retrieve + output).</li>
+    <li><strong>OUTPUT — the wall (this is where EchoLeak broke).</strong> A <a href="../GLOSSARY.md">deterministic
+      gate</a> on the way out: strip/deny outbound URLs, never auto-render model output as live HTML, don't
+      let a reply become an exfiltration channel. Persuasion is expected; the breach is a missing output
+      gate.<sup class="cite"><a href="#src">2</a></sup></li>
+  </ol>
+
+  <div class="panel warn">
+    <p class="label">⚠ The two RAG-specific boundaries the agent loop didn't have</p>
+    <p><strong>1. The write path (INGEST).</strong> "Who can write to the index?" is the new front door —
+    a curated corpus removes a whole class of poisoning that a locked-down loop never faced.
+    <strong>2. Retrieval access control (RETRIEVE).</strong> One shared index over many tenants means a
+    missing permission filter is a silent data breach, entirely separate from injection.</p>
+  </div>
+
+  <div class="panel key">
+    <p class="label">The one rule (RAG edition)</p>
+    <p>Threat-modeling a retrieval pipeline = <strong>secure the write path in (who can poison the corpus),
+    the read path out (whose data can this query reach), and the output path (can a reply exfiltrate) —
+    with a deterministic check on each.</strong> The model in the middle is the one component you assume is
+    already compromised.</p>
+  </div>
+
+  <div class="foot">
+    <span><a href="0003-agent-trust-boundary.html">↗ Reference 03: Agent Trust Boundary</a> · <a href="../GLOSSARY.md">Glossary</a></span>
+    <span><a href="../lessons/0006-rag-grounding-and-its-injection-surface.html">From Lesson 06</a></span>
+  </div>
+
+  <div class="ask">
+    <strong>Morning, when you're back:</strong> want to see the <code>filter=</code> access-control line
+    turned into a runnable Step&nbsp;3, or walk the write-path threat model against your <em>actual</em>
+    capstone corpus (scanner findings = who writes those?)? Bring it — that's a real capstone design call.
+    Sleep well.
+  </div>
+
+  <ol class="defn" style="margin-top:1.5rem;">
+    <li id="src"><a href="https://www.ibm.com/think/topics/retrieval-augmented-generation">IBM — What is
+      RAG?</a> (ingest→retrieve→generate pipeline; embeddings + vector similarity) and
+      <a href="https://genai.owasp.org/llmrisk/llm01-prompt-injection/">OWASP GenAI — LLM01 Prompt
+      Injection</a> (indirect injection via retrieved content; defense-in-depth, not a prompt fix).</li>
+    <li id="s-echo"><a href="https://www.hackthebox.com/blog/cve-2025-32711-echoleak-copilot-vulnerability">EchoLeak
+      — CVE-2025-32711</a> (Aim Security, 2025). Zero-click RAG indirect injection in M365 Copilot;
+      exfiltration via an auto-loaded image URL — the missing output gate.</li>
+  </ol>
+
+</div>
+</body>
+</html>
