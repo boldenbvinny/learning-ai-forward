@@ -1,6 +1,6 @@
 # Learning AI-Forward
 
-A senior security engineer with a security background, learning to **build, architect, and
+A senior security engineer with a software engineering background, learning to **build, architect, and
 secure AI-native systems** — in the open. This repo is the working record of that journey:
 lessons, hands-on code, red-team experiments, and the reasoning behind each decision.
 
