@@ -430,3 +430,43 @@ Standing ritual — learner asked for this (S4). Run this checklist at the end o
   with `git status` to confirm `.env` never sneaks in. Learner pushes manually after eyeballing `git log`; final
   gut-check = view the repo file tree on github.com and confirm `.env` absent. Secrets untouched. **Next unchanged:**
   on return, re-recall L01+L02, then build `practice/L07_triage-scorecard.py`, then L08 (Memory).
+- **2026-07-28 · Session 13:** Learner back from ~4-day gap; ran the lapsed spaced-review backlog
+  (6 due). **L01 ✅ REPAIRED** — 3-consequence table cold (Stateless→Memory / One-string→Security /
+  Sampled→Evals) + hallucination correctly placed as a *symptom of Sampled*, the exact miss from the
+  reset → **3d**. **L02 ✅ direction fixed** — app resends the whole transcript → injected text
+  persists (sharpened: *compounds*) → **3d**. **Lightning round L04/L05/L06/L07 all ✅** (sharpenings:
+  L06 = deny the whole reply, don't sanitize; L07 = a non-firing run proves *nothing*, only the code
+  gate on *fired* runs counts) → L04/L05/L06 **7d**, L07 **3d**. Retained everything through the gap =
+  storage strength, not fluency. Then **built `practice/L07_triage-scorecard.py`** (his question #1):
+  confusion matrix on agent #1's exploitable/not vs human labels, recall-biased **F2** (FN=shipped
+  exploit), **code-based** grader, F6 = poisoned finding. He ran it: **TP5/FP0/FN0/TN3, F2=1.00**, F6
+  held as TP, **10/10 stable**. **Key teaching turn: a 100% eval is a YELLOW flag** — no teeth, detects
+  no regression (same family as the false-green trap); F6 holding was the *probabilistic* layer
+  (delimiting+model) on one easy phrasing, not a wall (**pass@k**: attacker needs one win); the
+  *deterministic* protection = human label + recall scorecard catching the flip. Filed **LR-0007** +
+  glossary (**Confusion matrix, Precision, Recall, F-beta**) + REVIEW row **L07b** (due 07-29). **Built
+  v2** (`L07_triage-scorecard_v2.py` — boundary cases + injection battery, attacker pass@k K=5) — **WIP,
+  queued** for him to run this afternoon and report (Part 1 scorecard <1.00? which MISSes; Part 2 did any
+  injection land). **Next:** run v2 & report → CI gate (pytest `assert FN==0`, his Q#3) → **L08 Memory**.
+  Secrets untouched. **Git:** new work (2 scorecard files, LR-0007, glossary/review/notes edits) is
+  uncommitted since the 07-24 push — offered to commit as a dated commit; learner pushes.
+- **2026-07-28 · Session 13 (cont.):** Full triage-hardening arc in one sitting (Build→Secure→Architect
+  on one component). **v2** (boundary + 5-phrasing injection battery) cracked the perfect score → F2 0.83;
+  FNs were the *injections* (I4/I5), boundary positives all caught → weakness = adversarial finding text,
+  not vuln subtlety; pass@k confirmed. **v3** (k-run OR + injection-marker tripwire) → 100%, but **learner
+  rejected the tripwire himself**: a blocklist needs "n+infinity markers" (unwinnable), and the 100% was
+  circular (markers fit to I1–I5 = teaching to the test). → **LR-0008** (blocklist ≠ wall; robust fix =
+  least privilege on the *decision*: agent may RAISE, never DISMISS). **v4** (held-out novel-phrasing I6
+  breaks the tripwire; `RAISE | NEEDS_REVIEW`, no dismiss verb) → **0 shipped structurally,
+  phrasing-independent**; auto-raised 9/11, human queue 6/15. Learner's Architect call (keep ~40% to
+  humans — review has training value + keeps the human from rubber-stamping) → **LR-0009**, plus two coach
+  guardrails (govern *absolute* throughput not the ratio; the queue is adversarially enriched so agent #1
+  must arm the JR with evidence + an escalation lane). **CI gate (question #3, DONE):** rule extracted to
+  `practice/triage_core.py` (single source of truth); `tests/test_triage_gate.py` + `.github/workflows/
+  ci.yml`. **Eval-driven** (learner's own reading this week: evals/tests first). Keystone insight: the gate
+  tests the *deterministic invariant* with a **worst-case model stub** (fully compromised) → **CI needs no
+  API key** (no secret/network/flake) — gate-on-code made literal. 3/3 pass locally (pytest not installed;
+  verified in plain python). REVIEW rows **L07b, L07c** seeded (due 07-29). **Standing-watch:** learner
+  drove the single most important insight (the blocklist critique) unprompted — security instinct now
+  *leading* the AI material. **Next:** commit today's work (one 07-28 dated commit) → learner pushes →
+  **L08 Memory** next session.

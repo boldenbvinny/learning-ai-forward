@@ -42,3 +42,8 @@ Append a row when you add a file. Status: `wip` · `works` · `attacked` (you tr
 | `L06_poisoned-doc-v2.py`      | L06    | Sharpened poison (framing + authority + delimiter escape)  | attacked |
 | `L07_eval-harness.py`         | L07    | Eval harness — dataset + code-based grader → accuracy score | works    |
 | `L07_gate-eval.py`            | L07    | pass^k security eval — attack ×k, assert the gate holds     | attacked |
+| `L07_triage-scorecard.py`     | L07    | Confusion matrix on agent #1's triage call; recall-biased F2 | works    |
+| `L07_triage-scorecard_v2.py`  | L07    | Teeth: boundary cases + injection battery (attacker pass@k)  | attacked |
+| `L07_triage-scorecard_v3.py`  | L07    | Defense: k-run OR-aggregation + injection-marker tripwire    | works    |
+| `L07_triage-scorecard_v4.py`  | L07    | Fail-safe: held-out injection breaks tripwire; RAISE/REVIEW  | works    |
+| `triage_core.py`              | L07    | Single source of truth for the triage verdict rule (no dismiss) | works    |

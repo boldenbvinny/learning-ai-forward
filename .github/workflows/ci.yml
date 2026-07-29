@@ -1,0 +1,18 @@
+name: triage-gate
+
+# Eval-driven CI: the security invariant for agent #1 runs on every push/PR.
+# A change that lets an exploitable finding be silently closed fails the build.
+on: [push, pull_request]
+
+jobs:
+  security-invariant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      # NOTE: no ANTHROPIC_API_KEY is set. The gate tests deterministic code,
+      # not the model, so CI needs no secret, no network, and never flakes.
+      - run: python -m pytest tests/ -v

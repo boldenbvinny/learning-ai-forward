@@ -174,3 +174,26 @@ Succeeds only if **all** k trials succeed; falls with k. The **defender's** bar 
 [[Deterministic gate]] must hold on *every* run where the attack fired, not just on average. A wall
 that fails on any run is a curtain.
 _Avoid_: reliability %, uptime (pass^k is all-or-nothing over k)
+
+**Confusion matrix**:
+The 2×2 tally of a binary classifier's calls against ground truth — **TP** (flagged, real), **FP**
+(flagged, not real), **FN** (missed a real one), **TN** (correctly ignored). The raw material every
+triage metric is computed from. For a security triage agent the costs are wildly asymmetric: an FN
+is a *shipped exploit*, an FP is *alert fatigue*. See [[0007-triage-scorecard-a-perfect-score-has-no-teeth]].
+_Avoid_: accuracy table (accuracy hides the asymmetry)
+
+**Precision**:
+TP / (TP + FP) — of everything the agent flagged, the fraction that was real. Protects human
+**time**: low precision = [[Confusion matrix|alert fatigue]]. Says nothing about what was missed.
+_Avoid_: accuracy
+
+**Recall**:
+TP / (TP + FN) — of everything that was actually real, the fraction the agent caught. Protects the
+**system**: low recall = shipped exploits. The metric a security triage deliberately biases toward.
+_Avoid_: coverage, accuracy
+
+**F-beta score**:
+A single score blending [[Precision]] and [[Recall]], with β setting their weight. **β>1 weights
+recall harder** — **F2** (β=2) is the triage default because a false negative is catastrophic; F1
+(β=1) weights them equally. Collapses two numbers into one you can regression-test.
+_Avoid_: F1 (that's only the β=1 case), accuracy
