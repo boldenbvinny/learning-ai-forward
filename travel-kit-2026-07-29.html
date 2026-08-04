@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On-the-Go Kit · 2026-07-29</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  /* Phone-first tweaks for a kit read away from the desk. */
+  body { padding-top: 2.2rem; }
+  .kit-meta {
+    font-family: var(--sans); font-size: .8rem; color: var(--ink-faint);
+    display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin: .2rem 0 1.4rem;
+  }
+  .kit-meta b { color: var(--ink-soft); font-weight: 650; }
+  .steps { counter-reset: s; list-style: none; padding-left: 0; }
+  .steps > li {
+    position: relative; padding-left: 2.2rem; margin: .9rem 0;
+    font-family: var(--sans); font-size: .95rem; line-height: 1.5;
+  }
+  .steps > li::before {
+    counter-increment: s; content: counter(s);
+    position: absolute; left: 0; top: -.05rem;
+    width: 1.5rem; height: 1.5rem; border-radius: 50%;
+    background: var(--sec); color: #fff; font-size: .8rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  @media (prefers-color-scheme: dark) { .steps > li::before { color: #16150f; } }
+  .due-flag {
+    font-family: var(--sans); font-size: .6rem; letter-spacing: .1em;
+    text-transform: uppercase; font-weight: 700; color: var(--warn);
+    background: var(--warn-bg); border-radius: 4px; padding: .1rem .4rem;
+    margin-left: .5rem; vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="kicker">On-the-Go Kit · <a href="MISSION.md">AI-Forward mission</a></p>
+  <h1>Travel Kit — one night, no laptop needed</h1>
+  <p class="lede">Same shape as your last trip: a little reading, a recall deck, and one thing
+  to design in your head. Everything here works on a phone, on a plane, in a hotel — <strong>nothing
+  to run</strong>. Do the recall <em>from memory first</em>; that struggle is the point.</p>
+
+  <div class="kit-meta">
+    <span><b>Budget:</b> ~15 min</span>
+    <span><b>Device:</b> phone is enough</span>
+    <span><b>Code:</b> none</span>
+    <span><b>On return:</b> we grade the deck &amp; build L08 (Memory)</span>
+  </div>
+
+  <div class="panel key">
+    <p class="label">The one habit</p>
+    <p>For every card below: <strong>say the answer out loud before you tap to reveal.</strong>
+    Retrieval that costs effort is what moves knowledge into long-term storage — reading the answer
+    without struggling first feels productive but builds almost nothing.</p>
+  </div>
+
+  <!-- ============================ RECALL DECK ============================ -->
+  <h2>1 · Recall deck</h2>
+  <p>Seven cards. The first two are your foundations (warm-up); the last five are this week's
+  triage-hardening arc — your freshest and hardest material. Tap a card to check yourself.</p>
+
+  <div class="card">
+    <span class="card-tag">L01 · foundation</span>
+    <p class="card-front">A model call has <em>one</em> root property and <em>three</em> consequences.
+    Name the root property, the three consequences, and the course discipline each one forces.</p>
+    <span class="card-hint">tap to reveal · think in a 3-row table first</span>
+    <div class="card-back">
+      Root property: a model call is a <strong>stateless, one-shot, sampled next-token predictor</strong>.
+      The three consequences → disciplines:
+      <strong>Stateless</strong> (forgets between calls) → <strong>Memory / RAG</strong>;
+      <strong>One string</strong> (instructions + data arrive fused, unseparable) → <strong>Security / injection</strong>;
+      <strong>Sampled</strong> (probabilistic output) → <strong>Evals</strong>.
+      Trap you've hit before: <em>hallucination is a symptom of “Sampled,” not a fourth consequence.</em>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="card-tag">L02 · foundation</span>
+    <p class="card-front">The model forgets everything between turns. So how does a chatbot “remember”
+    the conversation — and why is that mechanism the <em>engine</em> of prompt injection?</p>
+    <span class="card-hint">tap to reveal · the answer is about what the app does, not the model</span>
+    <div class="card-back">
+      The <strong>app resends the entire transcript</strong> on every turn — the model doesn't remember,
+      your code re-feeds it. So injected text isn't a one-shot: once it's in the transcript it
+      <strong>persists and compounds</strong>, replayed into every future turn. And roles
+      (<code>system</code>/<code>user</code>) are a <strong>learned prior, not a boundary</strong> — a
+      trained tendency the attacker can argue the model out of.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="card-tag">L07 · evals <span class="due-flag">due 07-31</span></span>
+    <p class="card-front">On a red-team gate: what's the <em>attacker's</em> success metric vs. the
+    <em>defender's</em>? And what does a run where the attack simply <em>doesn't fire</em> prove?</p>
+    <span class="card-hint">tap to reveal · two metrics, one trap</span>
+    <div class="card-back">
+      Attacker = <strong>pass@k</strong>: needs ≥1 success in k tries (one win is a breach).
+      Defender = <strong>pass^k</strong>: the gate must hold on <em>every</em> fired run.
+      A non-firing run proves <strong>nothing</strong> — the model just happened not to comply that
+      time (a coin flip). Credit goes only to the <em>code gate on runs where the attack actually fired</em>.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="card-tag">L07b · scorecard <span class="due-flag">due today</span></span>
+    <p class="card-front">Your triage scorecard comes back <strong>F2 = 1.00</strong>. Why is a perfect
+    score a <em>yellow</em> flag, not a green one — and why F2 (β&gt;1) rather than plain accuracy?</p>
+    <span class="card-hint">tap to reveal · a perfect eval has a specific defect</span>
+    <div class="card-back">
+      A 100% eval has <strong>no teeth</strong>: it detects no regression (same family as the
+      false-green trap) — it means the test set is too easy and lacks boundary + adversarial cases.
+      The perfect score was the <em>probabilistic</em> layer holding on one easy phrasing
+      (pass@k — the attacker only needs one miss), not a wall.
+      You bias <strong>recall (F2, β&gt;1)</strong> because a false negative = a
+      <strong>shipped exploit</strong>; a false positive only costs review time.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="card-tag">L07c · least privilege <span class="due-flag">due today</span></span>
+    <p class="card-front">A blocklist tripwire caught <em>every</em> injection in your battery
+    (I1–I5), 100%. You rejected it anyway. Why — and what's the robust fix?</p>
+    <span class="card-hint">tap to reveal · you drove this insight yourself</span>
+    <div class="card-back">
+      Reject it: a blocklist needs <strong>n + ∞ markers</strong> (unwinnable — novel phrasing I6
+      walks right past it), and the 100% was <strong>circular</strong> — the markers were fit to the
+      test (teaching to the test). Robust fix = <strong>least privilege on the decision</strong>: the
+      agent may <code>RAISE</code> / <code>NEEDS_REVIEW</code> but <strong>never DISMISS</strong>.
+      Remove the dangerous verb entirely → “0 shipped” becomes <em>structural and
+      phrasing-independent</em>, not a filter you have to keep patching.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="card-tag">L07c · CI gate <span class="due-flag">due today</span></span>
+    <p class="card-front">Your security CI gate runs with <strong>no API key</strong> — no secret, no
+    network, no flake. How is that possible, and why is it the whole point?</p>
+    <span class="card-hint">tap to reveal · what is the test actually testing?</span>
+    <div class="card-back">
+      It tests the <strong>deterministic invariant, not the model</strong>. You <em>stub the model to
+      its worst case</em> — fully compromised, every finding → “not exploitable” — and assert
+      <strong>0 exploits still ship</strong>. Because the guarantee lives in <em>code</em>
+      (<code>triage_core.py</code>, the single source of truth), the test needs no key, no network,
+      no live call. That's <strong>“gate on code, not the model”</strong> made literal. Any regression
+      that reintroduces a dismiss/close verb fails the build.
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="card-tag">Capstone · the review queue</span>
+    <p class="card-front">The fail-safe routes low-confidence findings to a <em>junior</em> human. Name
+    the trap hiding in that design, and the two guardrails that keep “0 shipped” true in practice.</p>
+    <span class="card-hint">tap to reveal · this is your newest Architect call</span>
+    <div class="card-back">
+      <strong>Trap:</strong> the queue is <em>adversarially enriched</em> — the injected/manipulated
+      cases (like I6) land in <code>NEEDS_REVIEW</code>, so the hardest, most attacker-shaped decisions
+      go to the <em>least</em> experienced human. And an over-shrunk or over-full queue →
+      rubber-stamping → <code>NEEDS_REVIEW</code> silently decays back into <code>DISMISSED</code>.
+      <strong>Guardrails:</strong> (1) govern <em>absolute throughput</em> (findings ÷ reviewer ÷ time),
+      not the ratio — 40% is humane at 10 findings, drowning at 1000; (2) agent #1 must <em>arm the
+      reviewer</em>: code location, data-flow, a suggested exploit path, plus an <strong>escalation
+      lane</strong> to a senior. The output is never a bare label — it's label + evidence + confidence
+      + escalation path.
+    </div>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ============================ READ-AHEAD ============================ -->
+  <h2>2 · Read-ahead (primes L08)</h2>
+  <p>Our next lesson closes the last open discipline column — <strong>Stateless → Memory</strong>.
+  Read this on the way; it frames an LLM's whole “mind” as a finite context budget, which is exactly
+  the lens L08 uses.</p>
+
+  <div class="panel">
+    <p class="label">📖 Primary source</p>
+    <p><a href="https://manuelsh.github.io/blog/2025/understanding-LLM-from-context-window-pov/">The
+    Context-Window Perspective on LLMs</a> — memory and reasoning seen through the finite context
+    window. ~10 min, reads fine on a phone.</p>
+  </div>
+
+  <div class="panel sec">
+    <p class="label">Hold this question while you read</p>
+    <p>Memory is just <em>more untrusted context, injected at a different point in the loop</em> — and
+    it's <strong>worse</strong> than a one-shot injection. Ask yourself: <em>if agent #1 stores prior
+    findings so it can dedupe across scans, why does a poisoned memory outrank a poisoned tool result?</em>
+    (Hint: a poisoned tool result burns one run; a poisoned memory <strong>replays every session</strong>.)
+    And: does “memory” change where the <em>authority to close</em> a finding lives? It must not.</p>
+  </div>
+
+  <hr class="rule">
+
+  <!-- ========================= DESIGN IN YOUR HEAD ========================= -->
+  <h2>3 · Design in your head</h2>
+  <p>No editor — just think it through, maybe jot three lines in your notes app. We'll compare when
+  you're back.</p>
+
+  <ol class="steps">
+    <li>Write agent #1's <strong>output object</strong> from memory. From this week it's not a bare
+      label — it carries <em>four</em> things. What are they? (Look away from the capstone card above first.)</li>
+    <li>The queue is sized by <strong>reviewer throughput</strong>, not a fixed percentage. State the
+      quantity you'd actually put a threshold on, and what happens to safety once it's exceeded.</li>
+    <li><strong>The L08 bridge:</strong> agent #1 has no <code>DISMISS</code> verb by design — so how does
+      it avoid re-raising a finding it has <em>already</em> seen on a previous scan, <em>without</em>
+      inventing a dismiss? Where does that “I've seen this” memory live, and what's the new injection
+      surface it opens? Bring your answer — it's the seed of L08.</li>
+  </ol>
+
+  <div class="ask">
+    💬 <strong>I'm your teacher — ping me anytime.</strong> Stuck on a card, disagree with an answer, or
+    want to argue about the review-queue design mid-flight? Message me and we'll go a layer deeper. When
+    you're back, we grade the deck against <a href="REVIEW.md">REVIEW.md</a> and build
+    <strong>Lesson 08 — Memory &amp; context management</strong>.
+  </div>
+
+  <div class="foot">
+    <span>AI-Forward · on-the-go kit · 2026-07-29</span>
+    <span><a href="lessons/0007-evals-measuring-what-you-built.html">← L07 Evals</a> · <a href="GLOSSARY.md">Glossary</a></span>
+  </div>
+
+</div>
+<script src="assets/recall-deck.js"></script>
+</body>
+</html>

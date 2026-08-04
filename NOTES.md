@@ -470,3 +470,102 @@ Standing ritual — learner asked for this (S4). Run this checklist at the end o
   drove the single most important insight (the blocklist critique) unprompted — security instinct now
   *leading* the AI material. **Next:** commit today's work (one 07-28 dated commit) → learner pushes →
   **L08 Memory** next session.
+- **2026-07-29 · Session 14 (prep, learner on travel until AM):** Learner back but traveling overnight;
+  asked for "something similar to last time I was on travel" = the **S11 on-the-go kit** (device-light:
+  reading + mental recall deck + design-in-head, no code). Built it this time as a **durable, phone-first
+  HTML page** — `travel-kit-2026-07-29.html` at root. Three parts: (1) **7-card tap-to-reveal recall deck**
+  (new reusable component `assets/recall-deck.js` + `.card` styles added to `assets/style.css`), weighted to
+  the fresh triage arc + due items: L01, L02 (foundation warm-up) then L07 pass@k/pass^k, L07b perfect-score-
+  no-teeth, L07c blocklist-reject + no-key CI gate, and the review-queue trap (LR-0009). Covers everything due
+  while away (L07b/L07c due 07-29; L07/L01/L02 due 07-31). (2) **Read-ahead** = the Context-Window-POV article
+  (RESOURCES) to prime **L08 Memory** — the last unbuilt discipline column — with a security framing Q (poisoned
+  memory replays every session > one-shot poisoned tool result; authority-to-close must not move to memory).
+  (3) **Design-in-head** = recall agent #1's 4-field output object, the throughput-not-ratio queue rule, and
+  the L08 bridge (dedupe prior findings with *no* DISMISS verb → where does "I've seen this" memory live +
+  its new injection surface). **No review graded, no LR/glossary** (nothing demonstrated — pure prep). Secrets
+  untouched (markdown/HTML only). **Next (on return):** grade the recall deck against REVIEW.md (advance/reset
+  the due rows), then build **L08 — Memory & context management**. Note: today's kit + S13 scorecard work still
+  uncommitted since 07-24 push — offer a dated commit; learner pushes.
+- **2026-08-02 · Session 15:** Learner back from travel, **did none of the kit** — reframed up front: spacing
+  punishes *misses*, not *delay*; a longer gap = harder retrieval = more storage strength **if** it lands. Ran
+  all 5 lapsed rows cold. **All 5 reset to 1d (due 08-03).** Results: **L01 ✗ (4th loss)** — 2 of 3 properties,
+  and the "consequence" he gave was L02's answer. **L02 ½** — got the resend mechanism, but said "full *response*"
+  (→ transcript) and never produced the consequence (persists **& compounds**). **L07 ½** — *pass@k/pass^k clean
+  and unaided (banked, won't re-ask)*; the non-firing clause came back as mechanism not verdict (gate **untested**,
+  not gate won). **L07b ✗** — "phrases weren't strong enough" (a real sliver: cases too easy) but missed the
+  headline: a 100% eval **detects no regression**. **L07c ⅓** — circularity critique unaided (his own S13 insight,
+  it stuck); missed **n+∞ markers**; described `NEEDS_REVIEW` as an artifact but missed the mechanism (**no DISMISS
+  verb** = least privilege on the decision); **CI/no-API-key unanswered**.
+  **Diagnostic worth keeping:** the losses cluster exactly on material that **never got its first rep** (L07b/L07c
+  seeded 07-28, due 07-29, he traveled → 0 retrievals before a 4-day gap). Items with 2+ reps mostly held. That's
+  the forgetting curve behaving, not a learner problem → **scheduling fix, not a teaching fix**.
+  **L01 METHOD CHANGE (the real work of this session).** Four repairs, four losses ⇒ stopped prescribing more reps.
+  Root cause: I'd handed him a **3×3 table = 9 arbitrary cells**. Replaced with a **derivation off a function
+  signature** (his SWE anchor): `f(one_string) -> one_sampled_string` → *no `self`* → stateless → Memory/RAG;
+  *one arg, not `f(instructions, data)`* → injection → Security; *returns a sample, not a computation* → Evals.
+  Handle: **"no state, one arg, dice."** He wrote it out **3× unprompted** (`practice/L01_derivation.md`), all 9
+  cells correct, terser each pass. **Flagged honestly: 3 passes in one sitting = MASSED practice → fluency, not
+  storage** — and his wording tracked mine, so re-memorisation was still the live risk. → probed with a question
+  the table *cannot* answer: **"the SDK gives you a separate `system=` param — why isn't it a boundary?"**
+  Answer: *"identity barrier that is a suggested context."* **"Suggested" = right instinct; "barrier" = the exact
+  misconception**, and the two contradict. Taught the mechanism (system/messages are **JSON transport**; server
+  renders both into **one flat token sequence** via a chat template *before* inference; attention has no trust
+  dimension; the deference is **post-trained** ⇒ **learned prior**, and priors are evidence-weighted, so they can
+  be outweighed — nothing *refuses*). **Payoff landed on his own turf: prompt injection is named after SQL
+  injection (concatenation glues trusted+untrusted); SQLi has a structural fix — parameterized queries, a channel
+  separation carried to the engine — and there is NO parameterized query for LLMs.** So the course's defenses
+  (output gate, least privilege, no-DISMISS, worst-case-stub CI) exist **because the primitive is permanently
+  missing**, not as a stopgap. Added 2 sources to RESOURCES: **NCSC "Prompt injection is not SQL injection"**
+  (control/data channel collapse) + **Simon Willison** (coined the term; injection≠jailbreak).
+  **Held per discipline:** no LR (the L01 method change gets its LR only when 08-03 proves it worked), no glossary
+  adds (control/data-channel collapse only *half* demonstrated — watch for it). **Deferred L08 deliberately** and
+  told him why: 5 unconsolidated rows is the exact condition that ate L07b/L07c; stacking Memory on top recreates
+  it. Offered the override; he didn't take it. Secrets untouched (markdown only).
+  **Next:** (1) **08-03 cold re-test, ~5 min, before re-reading:** L01 derivation from the signature · L02 resend
+  → persists **& compounds** · L07 non-firing = untested · L07b no-teeth = no regression signal · L07c two-part
+  tripwire argument + **no DISMISS verb** + why CI needs no key. (2) **Re-probe `system=`** — want the *mechanism*
+  (two params → one token string before inference) + the words **learned prior**; if it lands, glossary-add the
+  control/data-channel collapse and write the L01-method LR. (3) Then **L08 — Memory**. (4) Uncommitted since the
+  07-24 push: travel kit, `assets/recall-deck.js`, style.css, NOTES/REVIEW/RESOURCES edits — offer a dated commit.
+- **2026-08-03 · Session 16:** Learner arrived with a capstone question; **ran the due recall FIRST** with a
+  concrete reason rather than ritual — the capstone discussion would have spoken L01/L07b/L07c aloud and
+  contaminated the cold test. Worth reusing as a framing. **Results: 5 of 6 clean.** **L01 ✅ — the S15 method
+  change is validated** (signature cold, then all three rows unfolded on request; first time any part of L01
+  survived a gap in 4 attempts) → **3d**, **[[0010-l01-derive-dont-memorize]] written** (claim scoped narrowly:
+  survived *one* day; 08-06 and the 7d interval are the real test). **L02 ✅** transcript + compounds, yesterday's
+  exact miss repaired → 3d. **L07 ✅** — his phrasing *"a gate untested is a gate untrusted"* is better than mine,
+  adopted into REVIEW → 7d. **L07b ✅** got the regression headline; tightened the wording (a metric pinned at the
+  ceiling has nowhere to move — a 1.00 is a light painted green) → 3d. **L07c ⚠️** — CI + removed-power returned
+  but **over-broad** ("took away the agent's power to be decision maker" → it removed exactly ONE verb, DISMISS;
+  it still decides RAISE vs NEEDS_REVIEW); the two-part tripwire argument (circularity + **n+∞**) not produced
+  → 3d, that piece flagged for narrow re-test. **`system=` re-probe ✅ repaired** — *"a weight **learned** to be
+  treated higher"*; yesterday's "barrier" misconception is gone. Still missing the mechanism (two params → one
+  token string before inference), so **no glossary add yet**. *Note: he opened `L01_derivation.md` mid-exchange;
+  asked neutrally whether that was before or after answering (checking after is what I told him to do) — flag,
+  not accusation. Keep doing this, it protects the signal.*
+  **Capstone (the session's substance) → [[0011-capstone-presupposes-basic-security]].** Presenter's claim
+  ("biggest issue is lack of basic security") verified: 88% of agent-deploying orgs had an incident, **61%
+  over-permissioned credentials**; added **OWASP Top 10 for Agentic Applications 2026 + ASI**, **Saltzer &
+  Schroeder 1975**, and the incident-data sources to RESOURCES. Two answers, opposite directions: (a) his agent's
+  internals ARE basic security — mapped every defense he built onto S&S 1975 (gate-every-iteration = complete
+  mediation, no-DISMISS = least privilege, NEEDS_REVIEW = fail-safe defaults, worst-case stub = open design,
+  **his own tripwire rejection = economy of mechanism**); (b) for a customer, agent #1 applies *prioritization*,
+  not a control, and presupposes an org already above the basics line. **The inversion:** ship-to-machines needs
+  standing fleet write access = the 61% at max blast radius ⇒ *the product presupposes basic security rather than
+  replacing it.* **His prerequisite list was strong domain work** (ITIL fluency; **standard-vs-normal change is
+  the pipeline's actual integration point** — no pre-approved standard-change category ⇒ a machine-speed agent
+  queues behind a weekly CAB and the speed thesis dies; Shadow IT/AI → false coverage confidence; existing P0
+  lane). **Gap I added:** all four of his items answer *"can the org absorb a change?"*, none answer *"can the org
+  tell when the agent is the attacker?"* → independent audit the agent cannot write to (a hijacked agent writes
+  its own alibi), and rollback is only reachable through detection. Also reframed his IAM take — agreed "fully
+  clean is overkill" but converted an untestable maturity bar into a binary capability: can they provision/revoke
+  **one scoped short-lived machine identity** and audit it. **Teaching pattern confirmed twice this session**
+  (logged in LR-0010): this learner encodes via SWE anchors — the `system=` probe landed as *concatenation vs
+  parameterized queries*, and the whole agent-security frame landed as *Saltzer & Schroeder*. Use existing
+  fundamentals as the attachment point, always. MISSION unchanged. Secrets untouched.
+  **Next:** (1) **08-06:** L01 (the real test of the derivation), L02, L07b, L07c due — for L07c demand the
+  **n+∞** argument specifically; L07 due 08-10; **L04/L05/L06 were due 08-04 and will have lapsed — sweep them.**
+  (2) Re-probe `system=` for the *mechanism* → unlocks the glossary add. (3) **L08 — Memory & context
+  management**, the last unbuilt discipline column and the natural next capstone brick (dedupe "seen this finding
+  before" with no DISMISS verb → where that memory lives + its injection surface; poisoned memory replays every
+  session). (4) Commit: everything since the 07-24 push is still local.

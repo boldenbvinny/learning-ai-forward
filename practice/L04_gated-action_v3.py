@@ -1,5 +1,13 @@
 #The model did not prompt me for a "yes or no".
 #It could be that the file payroll.csv is not locted in this directory
+#
+# ^ HYPOTHESIS DISPROVED (S7, 2026-07-20). The input() gate is UPSTREAM of any
+#   file-existence check, so a missing file could never explain a missing prompt.
+#   Real cause: the injection didn't persuade a tool_use on that run -> delete_file()
+#   was never called -> the gate was never TESTED. The response was a TextBlock
+#   (stop_reason "end_turn"), not a ToolUseBlock.
+#   Takeaway: a clean run is not the gate winning; it's the gate untested.
+#   Sampling is non-deterministic, so run #11 can still emit the delete.
 
 import anthropic
 from dotenv import load_dotenv

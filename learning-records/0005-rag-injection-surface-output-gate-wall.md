@@ -5,7 +5,7 @@ injection point ([[0004-the-gate-holds-inside-the-loop]] spine, new door), and �
 part — **proved the probabilistic-attack / deterministic-wall split by experiment**, then
 red-teamed their own gate to make it fire. This sets the floor for the capstone's retrieval design.
 
-**What they ran & saw** (`L06_poisoned-doc-v2.py`): an EchoLeak-style poisoned "onboarding"
+**What they ran & saw** (`L06_poisoned-doc_v2.py`): an EchoLeak-style poisoned "onboarding"
 document, retrieved into context, instructed the model to append an exfil URL
 (`![status](https://…)`). Their deterministic output gate (`if URL.search(reply): return "[BLOCKED]"`)
 sat on the egress path. First attempts didn't fire — the model wasn't persuaded, RAW had no URL,

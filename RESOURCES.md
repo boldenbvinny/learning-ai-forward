@@ -21,6 +21,41 @@ Knowledge in lessons is drawn from here — not from parametric guesses.
   Canonical: why instructions/data can't be separated, direct vs. indirect, mitigations. **Primary source for Lesson 01 security.**
 - [OWASP Top 10 for LLM Applications (2025)](https://genai.owasp.org/)
   The full threat taxonomy. Use for: threat-modeling AI systems, structuring red-team work.
+- [OWASP Top 10 for **Agentic** Applications (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)
+  + [Agentic AI — Threats and Mitigations (OWASP Agentic Security Initiative)](https://genai.owasp.org/resource/agentic-ai-threats-and-mitigations/)
+  The agent-specific successor to the LLM Top 10: goal hijacking, tool misuse, **identity & privilege
+  abuse**, weak guardrails, data poisoning, resource exhaustion, supply chain. ASI adds a structured
+  threat taxonomy (Agent Design · Memory · Planning & Autonomy · Tool Use · Deployment & Ops). Notes an
+  82:1 machine-to-human identity ratio — every agent is a machine identity. Use for: threat-modeling
+  **agent #1 and the North Star pipeline**; the ASI working group is also a **community** to contribute
+  to. (Verified 2026-08-03.)
+- [Saltzer & Schroeder (1975) — "The Protection of Information in Computer Systems"](https://www.cs.virginia.edu/~evans/cs551/saltzer/)
+  The canonical eight design principles: economy of mechanism, **fail-safe defaults**, **complete
+  mediation**, **open design**, **separation of privilege**, **least privilege**, least common mechanism,
+  psychological acceptability. Use for: the load-bearing claim that agent security is *classical* security
+  attached to a probabilistic component — every defense in this course maps onto a 1975 principle
+  (gate-every-iteration = complete mediation; no-DISMISS = least privilege; NEEDS_REVIEW = fail-safe
+  defaults; worst-case model stub = open design; rejecting the tripwire = economy of mechanism).
+  (Verified 2026-08-03.)
+- [Agentic AI Security incident data (2026)](https://shattered.io/agentic-ai-security-2026/) +
+  [Timeline of real AI agent incidents](https://github.com/webpro255/awesome-ai-agent-attacks)
+  Empirical grounding: 88% of agent-deploying enterprises reported an incident; **61% tied to
+  over-permissioned credentials**; documented cases include missing auth middleware on agent memory
+  endpoints (CWE-306). Use for: the "most agentic incidents are ordinary over-permissioning" argument,
+  and the capstone constraint that the pipeline *presupposes* basic security rather than replacing it.
+  (Verified 2026-08-03.)
+- [NCSC (UK) — "Prompt injection is not SQL injection (it may be worse)"](https://www.ncsc.gov.uk/blog-post/prompt-injection-is-not-sql-injection)
+  National-CERT-grade source on **why `system=` is not a boundary**. Core claim: an LLM merges the
+  **control channel** (instructions) and **data channel** (content) into one input — decades of security
+  engineering separated those in SQL, shells and HTML, and LLMs collapsed them back together. Crucially:
+  SQL injection has a structural fix (**parameterized queries**); **prompt injection has no equivalent
+  primitive**, which is why defenses must live *outside* the string. Use for: the architectural argument
+  that gates/least-privilege aren't a stopgap. (Verified 2026-08-02.)
+- [Simon Willison — coined "prompt injection"; on the SQL analogy](https://x.com/simonw/status/1745577211963584772)
+  and [Prompt injection vs jailbreaking](https://simonwillison.net/2024/Mar/5/prompt-injection-jailbreaking/)
+  The name comes from SQL injection because both are **string concatenation gluing trusted and untrusted
+  input together**. Also draws the injection-vs-jailbreak distinction (different threat, different defense).
+  Use for: precise vocabulary; explaining the risk to other engineers. (Verified 2026-08-02.)
 - [OWASP — LLM Prompt Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html)
   Concrete defensive patterns: structured prompts (data vs commands), input/output validation,
   least-privilege tool scopes, human-in-the-loop; guardrail LLMs are one layer, not a fix.
