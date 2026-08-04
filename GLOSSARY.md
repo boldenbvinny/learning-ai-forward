@@ -197,3 +197,48 @@ A single score blending [[Precision]] and [[Recall]], with β setting their weig
 recall harder** — **F2** (β=2) is the triage default because a false negative is catastrophic; F1
 (β=1) weights them equally. Collapses two numbers into one you can regression-test.
 _Avoid_: F1 (that's only the β=1 case), accuracy
+
+**Ingress / egress**:
+The two directions data crosses your boundary. **Ingress** = untrusted text entering the prompt
+(documents, tool results, memory). **Egress** = what the model emits and what your code then *does*
+with it. Defenses on ingress filter; defenses on egress constrain. Only the second is provable.
+_Avoid_: input/output (too vague to carry the security distinction)
+
+**The enumeration asymmetry**:
+You cannot enumerate the inputs; you can enumerate the actions. The input space is infinite and
+attacker-chosen — patch `n` bypasses and `n+∞` remain, and the attacker needs one win ([[pass@k]]).
+The action space is finite because *you authored it* (`delete_file`, `RAISE`, `NEEDS_REVIEW`), so a
+constraint on it can be asserted for every case. This is why every real defense in this course sits
+on the [[Ingress / egress|egress]] side. See [[0012-the-enumeration-asymmetry]].
+_Avoid_: "sanitize the input" as a wall (it is a speed bump you own, never a wall you can prove)
+
+**Sanitization**:
+Filtering untrusted text on [[Ingress / egress|ingress]] — stripping URLs, blocking marker phrases.
+A legitimate defense-in-depth *layer* and never a boundary: it is a blocklist over an infinite space,
+so it can only be verified against the strings you thought of. The blocklist failure mode is the same
+one that killed the v3 tripwire.
+_Avoid_: treating it as equivalent to a gate
+
+**Context rot**:
+As tokens accumulate in the context window, the model's ability to accurately recall information from
+it *decreases* — quality degrades well **before** the hard limit is reached, because attention is a
+finite budget spread over n² pairwise token relationships. Fitting is not the same as working.
+_Avoid_: "running out of context" (that's the cruder, separate failure)
+
+**Context engineering**:
+Curating and maintaining the optimal set of tokens during inference — the superset of prompt
+engineering. The goal is the *smallest* set of high-signal tokens, not the largest set that fits.
+_Avoid_: prompt engineering (that's one part of it)
+
+**Agentic memory**:
+Notes the agent writes to storage outside the context window and pulls back in later sessions. Not a
+model feature — it is application code choosing what past text re-enters the string.
+_Avoid_: "the model remembers" (it does not; [[Stateless]])
+
+**Memory poisoning (ASI06)**:
+Untrusted content written into persistent agent state, which then replays in every later session —
+including clean sessions with no attacker present. Distinguishing property: the attack window and the
+damage window are **separated in time**, so detection may outlive the logs. Defended by constraining
+what a memory entry may *influence* (ordering and presentation, never a verdict or a privilege), plus
+provenance, integrity and rollback. See [[0008-memory-and-the-permanent-injection]].
+_Avoid_: prompt injection (that one expires; this one does not)

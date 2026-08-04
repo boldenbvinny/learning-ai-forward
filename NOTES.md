@@ -569,3 +569,54 @@ Standing ritual — learner asked for this (S4). Run this checklist at the end o
   management**, the last unbuilt discipline column and the natural next capstone brick (dedupe "seen this finding
   before" with no DISMISS verb → where that memory lives + its injection surface; poisoned memory replays every
   session). (4) Commit: everything since the 07-24 push is still local.
+- **2026-08-04 · Session 17:** Recall-first again (L04/L05/L06 due exactly on schedule, 7d, first real test of
+  the three that had never lapsed). **L04 ✅ clean → 21d (due 08-25)** — *"a body of text that contains a request
+  to use a tool… the authority is held in the code"*; tool-call-as-**data-not-command** is now reflexive.
+  **L05 ⚠️ → 1d** and **L06 ⚠️ → 1d**, and the two misses turned out to be **one miss** → the session's substance,
+  recorded in **[[0012-the-enumeration-asymmetry]]**. L05: got the human gate, lost **per-iteration mediation**
+  and the **hard loop cap** entirely (still untested since 07-28 — the repair below does NOT cover them), and
+  offered as a second defense *"removing URLs from the prompts… is a sanitization mechanism."* L06: untrusted-input
+  location ✅, delimiter-not-a-fix ✅, query-time ACL ✅ — then **stopped without naming the wall**. Same reflex both
+  times: reaches for **cleaning the ingress**, not **constraining the egress**.
+  **The teaching move worth reusing.** The `n+∞` argument had now failed to appear 3×; asking a 4th time would have
+  repeated the L01 error (more reps of a failing method, [[0010-l01-derive-dont-memorize]]). **Stopped asking for
+  recall and forced generation instead:** handed him a concrete line-based filter (`if "http" in line.lower():
+  continue`), cast him as the attacker, asked for **three bypasses** + "what does patching all three tell you?"
+  He produced `hxxp` defanging, structural/line splitting, base64 — then concluded unaided *"n to infinite loop."*
+  **Fourth attempt, first success, and generated rather than recalled.** Then I supplied the bypass he missed —
+  **put no URL in the input at all**, let the model *construct* it on the way out — which proves a *perfect*
+  ingress filter blocks nothing, and hands back the exact L06 wall he'd failed to produce that morning. The two
+  misses supplied their own repair. Formulation locked: **you cannot enumerate the inputs; you can enumerate the
+  actions** (input space infinite + attacker-rechosen, pass@k; action space finite *because he authored it*, so
+  assertable — stub worst case, no API key). Sanitization = defense-in-depth **layer**, never a wall.
+  **L07c annotation updated:** the exact v4 verb came back clean on demand (*"removed the ability to DISMISS,
+  still allowed RAISE for human review"*) — a real sharpening over 08-03's over-broad version. The `n+∞` half
+  landed but **by generation**, so the claim is deliberately weak; **08-06 is the cold test**.
+  **Built [[lessons/0008-memory-and-the-permanent-injection.html]]** — closes the last discipline column
+  (Memory/RAG · Security · Evals). Knowledge from **Anthropic's context-engineering piece** (attention budget,
+  n² pairwise → **context rot** = recall degrades *before* the limit; compaction / structured notes / sub-agents;
+  JIT retrieval) and **OWASP Agent Memory Guard / ASI06** (memory *"is writable at runtime and persists across
+  sessions"*; SHA-256 integrity, read/write policy, snapshot+rollback; flagged honestly as **Incubator v0.0.0**).
+  Both added to RESOURCES, both WebFetch-verified. **The lesson's real payload is the capstone trap:** dedupe via
+  *"memory says we saw this and judged it benign → suppress"* **silently re-grants the DISMISS verb v4 removed,
+  with longer reach** — one win, permanent, attacker absent when it fires. Fix is the asymmetry, not a filter:
+  memory may influence ordering/dedupe keys/prior evidence shown *alongside*; never the verdict, whether a human
+  sees it, the severity floor, or any privilege. **Dedupe is a presentation problem he was about to solve with a
+  suppression mechanism.** Also: memory writes go through the same gate (complete mediation), provenance per
+  entry, and the LR-0011 append-only audit point sharpened — memory separates the **attack window from the damage
+  window in time**, so logs can rotate before the payload fires. Quiz answers 2/0/1. Hands-on = one script, two
+  sessions (session 2 clean and still wrong), step 5 = break it *without* filtering.
+  **Glossary earned 7 terms** (all demonstrated, not merely seen): ingress/egress · the enumeration asymmetry ·
+  sanitization · context rot · context engineering · agentic memory · memory poisoning (ASI06). *Note: the older
+  held glossary add (control/data-channel collapse) is still held — the `system=` **mechanism** re-probe did not
+  happen this session.* Saltzer & Schroeder reading not done (travel/work; he'll take it through the week) —
+  **not on a review clock, don't pressure it.** Learner opened LR-0005 mid-answer; asked neutrally, as standing
+  practice. Secrets clean: `.env` gitignored, zero `sk-ant-` matches in tracked files.
+  **Next:** (1) **08-05 due — L05, L06, L08.** For L05 demand **per-iteration mediation + hard loop cap**
+  specifically (untested since 07-28, not covered by yesterday's repair); for L06 demand **the wall itself**, not
+  the diagnosis; for L08 the poisoned-memory replay + why dedupe re-grants DISMISS. (2) **08-06:** L01 (the real
+  test of the derivation), L02, L07b, L07c — and on L07c ask for `n+∞` **cold**, since 08-04 was generation not
+  recall. (3) He reads L08 + runs the hands-on **this evening** — ask for the **outcome** (session 2's `VERDICT:`
+  line + the exact persisted text), not the story. (4) Re-probe `system=` for the *mechanism* → unlocks the held
+  glossary add. (5) The two Saltzer & Schroeder principles when he's read them. (6) Then **capstone: scoping
+  agent #1** — L08 was the last brick.

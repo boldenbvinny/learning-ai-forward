@@ -44,6 +44,14 @@ Knowledge in lessons is drawn from here — not from parametric guesses.
   endpoints (CWE-306). Use for: the "most agentic incidents are ordinary over-permissioning" argument,
   and the capstone constraint that the pipeline *presupposes* basic security rather than replacing it.
   (Verified 2026-08-03.)
+- [OWASP — Agent Memory Guard (reference implementation for **ASI06: Memory Poisoning**)](https://owasp.org/www-project-agent-memory-guard/)
+  The agent-memory threat, defined: mutable agent state (goals, user context, conversation history,
+  permissions) tampered with "through prompt injection, context manipulation, and identity hijacking,"
+  because memory "is writable at runtime and **persists across sessions**." Controls worth stealing even if
+  you never use the code: SHA-256 integrity validation, declarative policies on memory **read/write**, and
+  snapshots for forensics + "rollback to known-good states." **Status: Incubator, v0.0.0, stable targeted
+  Q4 2026** — read it for the control taxonomy, not as a dependency. **Primary source for Lesson 08 security.**
+  (Verified 2026-08-04.)
 - [NCSC (UK) — "Prompt injection is not SQL injection (it may be worse)"](https://www.ncsc.gov.uk/blog-post/prompt-injection-is-not-sql-injection)
   National-CERT-grade source on **why `system=` is not a boundary**. Core claim: an LLM merges the
   **control channel** (instructions) and **data channel** (content) into one input — decades of security
@@ -85,6 +93,17 @@ Knowledge in lessons is drawn from here — not from parametric guesses.
 - [Anthropic — Tool use (function calling) overview](https://docs.claude.com/en/docs/agents-and-tools/tool-use/overview)
   Authoritative reference for the tool-use request/response cycle: `tools` param, `input_schema`,
   `stop_reason:"tool_use"`, `tool_use`/`tool_result` blocks, the agentic loop. **Primary source for Lesson 04 code.**
+- [Anthropic — Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+  Context engineering = "the set of strategies for curating and maintaining the optimal set of tokens
+  (information) during LLM inference" — the superset of prompt engineering. Core mechanism: an **attention
+  budget** ("every new token introduced depletes this budget"), because the transformer creates **n² pairwise
+  relationships**; symptom = **context rot** ("as the number of tokens in the context window increases, the
+  model's ability to accurately recall information from that context decreases") — quality degrades *before*
+  the hard limit. Goal: "the smallest possible set of high-signal tokens." Three long-horizon techniques:
+  **compaction** (summarize + reinitiate), **structured note-taking** (agentic memory persisted outside the
+  window), **sub-agent architectures** (clean context windows, 1–2k-token distilled returns). Also
+  **just-in-time retrieval** — keep "lightweight identifiers (file paths, stored queries, web links)" and load
+  at runtime; hybrid beats either extreme. **Primary source for Lesson 08.** (Verified 2026-08-04.)
 - [IBM — What is Retrieval-Augmented Generation (RAG)?](https://www.ibm.com/think/topics/retrieval-augmented-generation)
   Clean vendor-neutral pipeline: RAG "supplements an LLM with external knowledge sources"; ingest/index with
   embeddings → retrieve by semantic similarity → augment the prompt → generate. Benefits = private/fresh data
